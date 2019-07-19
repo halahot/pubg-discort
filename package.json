@@ -1,0 +1,27 @@
+{
+  "name": "pubg-discord",
+  "version": "1.0.0",
+  "description": "pubg-discord bot made with js",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halahot/pubg-discort.git"
+  },
+  "keywords": [
+    "pubg",
+    "discort",
+    "bot"
+  ],
+  "author": "Max Gunko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/halahot/pubg-discort/issues"
+  },
+  "homepage": "https://github.com/halahot/pubg-discort#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
