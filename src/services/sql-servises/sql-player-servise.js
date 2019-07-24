@@ -1,12 +1,12 @@
 import * as pool from '../../config/sql.config';
 import { CacheService } from '../';
-import { TIME_IN_SECONDS } from '../../shared/constants';
+import { TIME_IN_SECONDS, PLATFORM_REGION } from '../../shared/constants';
 
 const cache = new CacheService();
 
 export default class SqlPlayersService {
 
-    static getCacheKey(username, platform) {
+    static getCacheKey(username, platform= PLATFORM_REGION.STEAM) {
         return `sql.player.getPlayer-${username}-${platform}`;
     }
 
@@ -15,7 +15,7 @@ export default class SqlPlayersService {
      * @param {string} username
      * @param {string} pubgId
      */
-    static async addPlayer(username, pubgId, platform) {
+    static async addPlayer(username, pubgId, platform = PLATFORM_REGION.STEAM) {
         const cacheKey = this.getCacheKey(username, platform);
         cache.del(cacheKey);
 
@@ -34,7 +34,7 @@ export default class SqlPlayersService {
      * Gets a player from their username
      * @param {string} username
      */
-    static async getPlayer(username, platform) {
+    static async getPlayer(username, platform= PLATFORM_REGION.STEAM) {
         const cacheKey = this.getCacheKey(username, platform);
         const ttl = TIME_IN_SECONDS.FIVE_MINUTES;
         const storeFunction = async () => {

@@ -1,8 +1,7 @@
 import * as Discord from 'discord.js';
 import {
-    AnalyticsService,
     CommonService,
-    DiscordMessageService,    
+    DiscordMessageService,
     ParameterService,
     PubgPlatformService, PubgPlayerService, PubgRatingService,
     SqlServerService
@@ -13,39 +12,41 @@ import { PubgSeasonService } from '../../services/pubg-api/season.service';
 
 export default class Statistic {
 
-    conf = {
+    /* conf = {
         group: 'PUBG',
         enabled: true,
         guildOnly: false,
         aliases: ['stats'],
         permLevel: 0
-    };
+    }; */
 
-    help = {
-        name: 'stat',
-        description: `Returns a player's season stats. **Name is case sensitive**`,
-        usage: [ '<prefix>stat [pubg username]',
-               '<prefix> tpp',
-               '<prefix> fpp' ],
-        examples: [
-            '!stat        (only valid if you have used the `register` command)',
-            '!stat john',
-            '!tpp',
-            '!fpp'
-        ]
-    };
+    getHelp() {
+        return {
+            name: 'stat',
+            description: `Возвращает статистику игрока. **Имя чувствительно к регистру**`,
+            usage: ['<prefix>stat [pubg username]',
+                '<prefix> tpp',
+                '<prefix> fpp'],
+            examples: [
+                '!stat        (только для зарегистрированных пользователей)',
+                '!stat john',
+                '!tpp',
+                '!fpp'
+            ]
+        };
+    }
 
     async run(bot, msg, params, perms) {
         const originalPoster = msg.author;
 
         try {
             this.paramMap = await this.getParameters(msg, params);
-        } catch(e) {
+        } catch (e) {
             return;
         }
 
         const checkingParametersMsg = (await msg.channel.send('Checking for valid parameters ...'));
-        const isValidParameters = await PubgValidationService.validateParameters(msg, this.help, this.paramMap.season,);
+        const isValidParameters = await PubgValidationService.validateParameters(msg, this.help, this.paramMap.season);
         if (!isValidParameters) {
             checkingParametersMsg.delete();
             return;
@@ -110,9 +111,9 @@ export default class Statistic {
 
         paramMap = {
             username: pubg_params.username,
-        }
+        };
 
-        AnalyticsService.track(this.help.name, {
+        /* AnalyticsService.track(this.help.name, {
             distinct_id: msg.author.id,
             discord_id: msg.author.id,
             discord_username: msg.author.tag,
@@ -122,7 +123,7 @@ export default class Statistic {
             region: paramMap.region,
             mode: paramMap.mode
         });
-
+ */
         return paramMap;
     }
 
@@ -146,17 +147,17 @@ export default class Statistic {
      */
     async setupReactions(msg, originalPoster, seasonData) {
         const onOneCollect = async () => {
-            AnalyticsService.track(`${this.help.name} - Click 1`, {
+            /* AnalyticsService.track(`${this.help.name} - Click 1`, {
                 pubg_name: this.paramMap.username,
                 season: this.paramMap.season,
                 region: this.paramMap.region,
                 mode: this.paramMap.mode
-            });
+            }); */
 
             const attatchment = await this.createImage(seasonData.soloFPPStats, seasonData.soloStats, 'Solo');
 
             if (msg.deletable) {
-                await msg.delete().catch(() => {});
+                await msg.delete().catch(() => { });
             }
 
             const newMsg = await msg.channel.send(`**${originalPoster.username}**, use the **1**, **2**, and **4** **reactions** to switch between **Solo**, **Duo**, and **Squad**.`, attatchment) as Discord.Message;
@@ -173,7 +174,7 @@ export default class Statistic {
             const attatchment = await this.createImage(seasonData.duoFPPStats, seasonData.duoStats, 'Duo');
 
             if (msg.deletable) {
-                await msg.delete().catch(() => {});
+                await msg.delete().catch(() => { });
             }
 
             const newMsg = await msg.channel.send(`**${originalPoster.username}**, use the **1**, **2**, and **4** **reactions** to switch between **Solo**, **Duo**, and **Squad**.`, attatchment) as Discord.Message;
@@ -190,7 +191,7 @@ export default class Statistic {
             const attatchment = await this.createImage(seasonData.squadFPPStats, seasonData.squadStats, 'Squad');
 
             if (msg.deletable) {
-                await msg.delete().catch(() => {});
+                await msg.delete().catch(() => { });
             }
 
             const newMsg = await msg.channel.send(`**${originalPoster.username}**, use the **1**, **2**, and **4** **reactions** to switch between **Solo**, **Duo**, and **Squad**.`, attatchment) as Discord.Message;
@@ -244,7 +245,7 @@ export default class Statistic {
         // Create/Merge error message
         if (!fppStatsImage && !tppStatsImage) {
             const errMessageImage: Jimp = await this.addNoMatchesPlayedText(baseHeaderImg.clone(), mode);
-            image = ImageService.combineImagesVertically(image ,errMessageImage);
+            image = ImageService.combineImagesVertically(image, errMessageImage);
         }
 
         const imageBuffer: Buffer = await image.getBufferAsync(Jimp.MIME_PNG);
@@ -255,124 +256,124 @@ export default class Statistic {
         return `Player hasn\'t played "${mode}" games this season`;
     }
 
-   MIDDLE
-        }
-        const font_48_white: Jimp.Font = await ImageService.loadFont(FontLocation.TEKO_REGULAR_WHITE_48);
-        const font_48_orange: Jimp.Font = await ImageService.loadFont(FontLocation.TEKO_BOLD_ORANGE_40);
-        let textWidth: number;
+    MIDDLE
+}
+const font_48_white: Jimp.Font = await ImageService.loadFont(FontLocation.TEKO_REGULAR_WHITE_48);
+const font_48_orange: Jimp.Font = await ImageService.loadFont(FontLocation.TEKO_BOLD_ORANGE_40);
+let textWidth: number;
 
-        const body_subheading_x: number = 50;
-        const body_subheading_y: number = 5;
-        const body_top_y: number = 95;
-        const body_mid_y: number = 245;
-        const body_bottom_y: number = 395;
+const body_subheading_x: number = 50;
+const body_subheading_y: number = 5;
+const body_top_y: number = 95;
+const body_mid_y: number = 245;
+const body_bottom_y: number = 395;
 
-        const platform: PlatformRegion = PlatformRegion[this.paramMap.region];
+const platform: PlatformRegion = PlatformRegion[this.paramMap.region];
 
-        let overallRating;
-        let rankTitle;
+let overallRating;
+let rankTitle;
 
-        const isOldSeason: boolean = PubgSeasonService.isOldSeason(platform, this.paramMap.season);
-        if (isOldSeason) {
-            overallRating = CommonService.round(PubgRatingService.calculateOverallRating(stats.winPoints, stats.killPoints), 0) || 'NA';
-        } else if (PubgPlatformService.isPlatformPC(platform) && this.paramMap.season === 'pc-2018-01') {
-            overallRating = CommonService.round(stats.rankPoints, 0) || 'NA';
-            badge = (await ImageService.loadImage(PubgRatingService.getRankBadgeImageFromRanking(stats.rankPoints))).clone();
-            rankTitle = PubgRatingService.getRankTitleFromRanking(stats.rankPoints);
-        } else if (this.paramMap.season === 'lifetime') {
-            overallRating = 'NA';
-        } else {
-            overallRating = CommonService.round(stats.rankPoints, 0) || 'NA';
-            badge = (await ImageService.loadImage(PubgRatingService.getSurvivalTitleBadgeImage(stats.rankPointsTitle))).clone();
-            rankTitle = PubgRatingService.getSurivivalTitle(stats.rankPointsTitle);
-        }
+const isOldSeason: boolean = PubgSeasonService.isOldSeason(platform, this.paramMap.season);
+if (isOldSeason) {
+    overallRating = CommonService.round(PubgRatingService.calculateOverallRating(stats.winPoints, stats.killPoints), 0) || 'NA';
+} else if (PubgPlatformService.isPlatformPC(platform) && this.paramMap.season === 'pc-2018-01') {
+    overallRating = CommonService.round(stats.rankPoints, 0) || 'NA';
+    badge = (await ImageService.loadImage(PubgRatingService.getRankBadgeImageFromRanking(stats.rankPoints))).clone();
+    rankTitle = PubgRatingService.getRankTitleFromRanking(stats.rankPoints);
+} else if (this.paramMap.season === 'lifetime') {
+    overallRating = 'NA';
+} else {
+    overallRating = CommonService.round(stats.rankPoints, 0) || 'NA';
+    badge = (await ImageService.loadImage(PubgRatingService.getSurvivalTitleBadgeImage(stats.rankPointsTitle))).clone();
+    rankTitle = PubgRatingService.getSurivivalTitle(stats.rankPointsTitle);
+}
 
-        const kd = CommonService.round(stats.kills / stats.losses) || 0;
-        const kda = CommonService.round((stats.kills + stats.assists) / stats.losses) || 0;
-        const winPercent = CommonService.getPercentFromFraction(stats.wins, stats.roundsPlayed);
-        const topTenPercent = CommonService.getPercentFromFraction(stats.top10s, stats.roundsPlayed);
-        const averageDamageDealt = CommonService.round(stats.damageDealt / stats.roundsPlayed) || 0;
+const kd = CommonService.round(stats.kills / stats.losses) || 0;
+const kda = CommonService.round((stats.kills + stats.assists) / stats.losses) || 0;
+const winPercent = CommonService.getPercentFromFraction(stats.wins, stats.roundsPlayed);
+const topTenPercent = CommonService.getPercentFromFraction(stats.top10s, stats.roundsPlayed);
+const averageDamageDealt = CommonService.round(stats.damageDealt / stats.roundsPlayed) || 0;
 
-        let x_centers = {
-            kd: 174,
-            winPercent: 404,
-            topTenPercent: 645.5,
-            averageDamageDealt: 881,
-            kda: 171.5,
-            kills: 407.5,
-            assists: 644,
-            dBNOs: 882.5,
-            longestKill: 287.5,
-            headshotKills: 762.6
-        }
+let x_centers = {
+    kd: 174,
+    winPercent: 404,
+    topTenPercent: 645.5,
+    averageDamageDealt: 881,
+    kda: 171.5,
+    kills: 407.5,
+    assists: 644,
+    dBNOs: 882.5,
+    longestKill: 287.5,
+    headshotKills: 762.6
+}
 
-        // Sub Heading
-        textObj.text = `${mode} - ${overallRating}`;
-        textWidth = Jimp.measureText(font_48_white, textObj.text);
-        img.print(font_48_white, body_subheading_x+10, body_subheading_y, textObj);
+// Sub Heading
+textObj.text = `${mode} - ${overallRating}`;
+textWidth = Jimp.measureText(font_48_white, textObj.text);
+img.print(font_48_white, body_subheading_x + 10, body_subheading_y, textObj);
 
-        if (badge) {
-            img.composite(badge, 525-(badge.getWidth()/2), 380);
-            textObj.text = rankTitle;
-            textWidth = Jimp.measureText(font_48_orange, textObj.text);
-            img.print(font_48_orange, 525-(textWidth/2), 360, textObj);
-        }
+if (badge) {
+    img.composite(badge, 525 - (badge.getWidth() / 2), 380);
+    textObj.text = rankTitle;
+    textWidth = Jimp.measureText(font_48_orange, textObj.text);
+    img.print(font_48_orange, 525 - (textWidth / 2), 360, textObj);
+}
 
-        textObj.text = `${stats.wins}`;
-        textWidth = Jimp.measureText(font_48_white, textObj.text);
-        img.print(font_48_white, 510-textWidth, body_subheading_y, textObj);
+textObj.text = `${stats.wins}`;
+textWidth = Jimp.measureText(font_48_white, textObj.text);
+img.print(font_48_white, 510 - textWidth, body_subheading_y, textObj);
 
-        textObj.text = `${stats.top10s}`;
-        textWidth = Jimp.measureText(font_48_white, textObj.text);
-        img.print(font_48_white, 685-textWidth, body_subheading_y, textObj);
+textObj.text = `${stats.top10s}`;
+textWidth = Jimp.measureText(font_48_white, textObj.text);
+img.print(font_48_white, 685 - textWidth, body_subheading_y, textObj);
 
-        textObj.text = `${stats.roundsPlayed}`;
-        textWidth = Jimp.measureText(font_48_white, textObj.text);
-        img.print(font_48_white, imageWidth-textWidth-180, body_subheading_y, textObj);
+textObj.text = `${stats.roundsPlayed}`;
+textWidth = Jimp.measureText(font_48_white, textObj.text);
+img.print(font_48_white, imageWidth - textWidth - 180, body_subheading_y, textObj);
 
-        // Body - Top
-        textObj.text = `${kd}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.kd-(textWidth/2), body_top_y, textObj);
+// Body - Top
+textObj.text = `${kd}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.kd - (textWidth / 2), body_top_y, textObj);
 
-        textObj.text = `${winPercent}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.winPercent-(textWidth/2), body_top_y, textObj);
+textObj.text = `${winPercent}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.winPercent - (textWidth / 2), body_top_y, textObj);
 
-        textObj.text = `${topTenPercent}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.topTenPercent-(textWidth/2), body_top_y, textObj);
+textObj.text = `${topTenPercent}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.topTenPercent - (textWidth / 2), body_top_y, textObj);
 
-        textObj.text = `${averageDamageDealt}`;;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.averageDamageDealt-(textWidth/2), body_top_y, textObj);
+textObj.text = `${averageDamageDealt}`;;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.averageDamageDealt - (textWidth / 2), body_top_y, textObj);
 
-        // Body - Middle
-        textObj.text = `${kda}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.kda-(textWidth/2), body_mid_y, textObj);
+// Body - Middle
+textObj.text = `${kda}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.kda - (textWidth / 2), body_mid_y, textObj);
 
-        textObj.text = `${stats.kills}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.kills-(textWidth/2), body_mid_y, textObj);
+textObj.text = `${stats.kills}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.kills - (textWidth / 2), body_mid_y, textObj);
 
-        textObj.text = `${stats.assists}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.assists-(textWidth/2), body_mid_y, textObj);
+textObj.text = `${stats.assists}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.assists - (textWidth / 2), body_mid_y, textObj);
 
-        textObj.text = `${stats.dBNOs}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.dBNOs-(textWidth/2), body_mid_y, textObj);
+textObj.text = `${stats.dBNOs}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.dBNOs - (textWidth / 2), body_mid_y, textObj);
 
-        // Body - Bottom
-        textObj.text = `${stats.longestKill.toFixed(2)}m`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.longestKill-(textWidth/2), body_bottom_y, textObj);
+// Body - Bottom
+textObj.text = `${stats.longestKill.toFixed(2)}m`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.longestKill - (textWidth / 2), body_bottom_y, textObj);
 
-        textObj.text = `${stats.headshotKills}`;
-        textWidth = Jimp.measureText(font_48_orange, textObj.text);
-        img.print(font_48_orange, x_centers.headshotKills-(textWidth/2), body_bottom_y, textObj);
+textObj.text = `${stats.headshotKills}`;
+textWidth = Jimp.measureText(font_48_orange, textObj.text);
+img.print(font_48_orange, x_centers.headshotKills - (textWidth / 2), body_bottom_y, textObj);
 
-        return img;
+return img;
     }
 }

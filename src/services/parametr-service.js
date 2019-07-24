@@ -1,11 +1,8 @@
-import {
-    CommonService,
-    PubgSeasonService,
-    SqlUserRegisteryService,
-    PubgPlatformService
-} from './'
-import { PubgAPI, PlatformRegion, Season } from '../pubg-typescript-api';
-
+import { CommonService } from './common-service.js';
+import { PubgSeasonService } from './pubg-api/';
+import { SqlUserRegisteryService } from './sql-servises/sql-user-registry-service.js';
+import { PubgPlatformService } from './pubg-api/';
+// import { Season } from '../pubg-typescript-api';
 
 export class ParameterService {
 
@@ -16,17 +13,15 @@ export class ParameterService {
      * @param {boolean} getUsername
      * @param {Server} serverDefaults
      */
-    static async getPubgParameters(param, msgAuthorId, getUsername, serverDefaults) {
-        const regExr = /^(.*?)\s?(region=\S+|season=\S+|mode=\S+)?\s?(region=\S+|season=\S+|mode=\S+)?\s?(region=\S+|season=\S+|mode=\S+)?$/
-        const result = params.match(regExr);
+    static async getPubgParameters(params, msgAuthorId, getUsername, serverDefaults) {
+        // const regExr = /^(.*?)\s?(region=\S+|season=\S+|mode=\S+)?\s?(region=\S+|season=\S+|mode=\S+)?\s?(region=\S+|season=\S+|mode=\S+)?$/
+        // const result = params.match(regExr);
 
+        const result = params;
         const param_location = {
             match: 0,
-            username: 1,
-            region_season_mode_1: 2,
-            region_season_mode_2: 3,
-            region_season_mode_3: 4
-        }
+            username: 1
+        };
 
         //const fullMatch: string = result[param_location.match];
         let parameters;
@@ -42,7 +37,7 @@ export class ParameterService {
             };
         } else {
             const region = this.getParamValue('region=', potential_region_season_mode, 'steam').toUpperCase().replace('-', '_');
-            const api = PubgPlatformService.getApi(PlatformRegion[region]);
+            const api = PubgPlatformService.getApi();
             const currentSeason = await PubgSeasonService.getCurrentSeason(api);
             const currentSeasonName = PubgSeasonService.getSeasonDisplayName(currentSeason);
 

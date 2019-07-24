@@ -23,15 +23,15 @@ export default class DiscordMessageService {
      *
      * @returns {Discord.RichEmbed} a new RichEmbed with basic information
      */
-    static createBaseEmbed(title, description, color, footer, setTimeStamp = false) {
+    static createBaseEmbed(nickname, json, setTimeStamp = false, settings) {
         const embed = new Discord.RichEmbed();
+        const title = `Профиль игрока ${nickname}:`;
 
         if (title) { embed.setTitle(title); }
-        if (description) { embed.setDescription(description); }
-        if (color) { embed.setColor(color); }
-        if (footer) { embed.setFooter(footer); }
-        if (setTimeStamp) { embed.setTimestamp(); }
-
+        if(settings.avatar){embed.  setThumbnail(settings.avatar);}
+        if(setTimeStamp) {embed.setTimestamp();}
+        embed.setColor(0x00AE86);
+        
         return embed;
     }
 
@@ -53,9 +53,9 @@ export default class DiscordMessageService {
         two_collector.on('collect', onTwoCollect);
         four_collector.on('collect', onFourCollect);
 
-        one_collector.on('end', collected =>  { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
-        two_collector.on('end', collected =>  { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
-        four_collector.on('end', collected => { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
+        one_collector.on('end', () =>  { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
+        two_collector.on('end', () =>  { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
+        four_collector.on('end', () => { msg.clearReactions().catch(() => {}).then(() => { msg.edit('').catch(() => {}); }); });
     }
 
 }

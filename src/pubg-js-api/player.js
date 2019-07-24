@@ -1,12 +1,10 @@
-import { AxiosPromise } from 'axios';
-
 import { PubgAPIEndpoint } from './base.js';
 
 
 export class PlayersPubgAPI extends PubgAPIEndpoint {
 
   get(id){
-    return api.axios.get(`/players/${id}`);
+    return this.api.axios.get(`/players/${id}`);
   }
 
   getSeasonStats(playerId, seasonId) {

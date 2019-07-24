@@ -2,7 +2,7 @@ import axios from 'axios';
 
 class PubgAPI {
 
-    constructor(apiKey, platformRegion) {
+    constructor(apiKey, platformRegion = 'steam') {
         this._apiKey = apiKey;
         this._platformRegion = platformRegion;
         const headers = {
@@ -15,7 +15,7 @@ class PubgAPI {
         } */
 
         this._axios = axios.create({
-          baseURL: `https://api.playbattlegrounds.com/shards/${this._platformRegion}/`,
+          baseURL: `https://api.pubg.com/shards/${this._platformRegion}/`,
           headers: headers,
         });
       }

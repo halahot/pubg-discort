@@ -15,8 +15,8 @@ export default class CacheService {
     constructor(ttlSeconds = TimeInSeconds.ONE_HOUR) {
         
         this.cache = new NodeCache({
-            stdTTL: ttl,
-            checkperiod: ttl * 0.1,
+            stdTTL: ttlSeconds,
+            checkperiod: ttlSeconds * 0.1,
             useClones: false
         });
     }
@@ -27,14 +27,14 @@ export default class CacheService {
      * @param {Function} storeFunction
      * @returns {Promise<T>}
      */
-    get(key, storeFunction, ttl) {
+    get(key, storeFunction, ttlSeconds) {
         const value= this.cache.get(key);
         if (value) {
             //logger.info(`CACHED: ${key}`);
             return Promise.resolve(value);
         }
 
-        return this.put(key, storeFunction, ttl);
+        return this.put(key, storeFunction, ttlSeconds);
     }
 
     /**
