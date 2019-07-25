@@ -2,8 +2,8 @@ import * as Discord from 'discord.js';
 import { DiscordMessageService } from '../../services/messages-services.js';
 import { ParameterService } from '../../services/parametr-service.js';
 import { PubgPlayerService } from '../../services/pubg-api.js';
-// import { SqlServerService } from '../../services/sql-servises/';
-// import { SqlServerRegisteryService } from '../../services/sql-servises/sql-user-registry-service.js';
+import { SqlServerService } from '../../services/sql-servises/sql-server-service.js';
+import { SqlServerRegisteryService } from '../../services/sql-servises/sql-serverRegistry-service.js';
 import { PubgPlatformService } from '../../services/pubg-api/';
 import { COLOR } from '../../shared/constants.js';
 
