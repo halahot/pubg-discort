@@ -1,14 +1,12 @@
 import * as Discord from 'discord.js';
-import {
-    CommonService,
+import { CommonService,
     DiscordMessageService,
     ParameterService,
     PubgPlatformService, PubgPlayerService, PubgRatingService,
     SqlServerService
 } from '../../services';
-import { PubgAPI, PlatformRegion, PlayerSeason, Player, GameModeStats, Season } from '../../pubg-typescript-api';
-import { ImageLocation, FontLocation } from '../../shared/constants';
-import { PubgSeasonService } from '../../services/pubg-api/season.service';
+import { PubgAPI, PlatformRegion, PlayerSeason, Player, GameModeStats, Season } from '../../pubg-js-api';
+import { PubgSeasonService } from '../../services/pubg-api/season-service.js';
 
 export default class Statistic {
 
@@ -38,54 +36,38 @@ export default class Statistic {
 
     async run(bot, msg, params, perms) {
         const originalPoster = msg.author;
+        const paramMap;
 
         try {
-            this.paramMap = await this.getParameters(msg, params);
+            paramMap = await this.getParameters(msg, params);
         } catch (e) {
             return;
         }
 
-        const checkingParametersMsg = (await msg.channel.send('Checking for valid parameters ...'));
-        const isValidParameters = await PubgValidationService.validateParameters(msg, this.help, this.paramMap.season);
-        if (!isValidParameters) {
-            checkingParametersMsg.delete();
-            return;
-        }
+        const checkingParametersMsg = (await msg.channel.send('Проверка параметров ...'));        
 
-        const message = await checkingParametersMsg.edit(`Getting data for **${this.paramMap.username}**`);
+        const message = await checkingParametersMsg.edit(`Получение данных **${paramMap.username}**`);
 
-        const api = PubgPlatformService.getApi(PlatformRegion[this.paramMap.region]);
-        const players = await PubgPlayerService.getPlayersByName(api, [this.paramMap.username]);
+        // const api = PubgPlatformService.getApi(PlatformRegion[this.paramMap.region]);
+        const players = await PubgPlayerService.getPlayersByName(api, [paramMap.username]);
 
         if (players.length === 0) {
-            message.edit(`Could not find **${this.paramMap.username}**'s stats on the \`${this.paramMap.region}\` region for the \`${this.paramMap.season}\` season. Double check the username, region, and ensure you've played this season.`);
+            message.edit(`Для **${this.paramMap.username}** не найдено статистики. Проверьте правильно ли введено имя.`);
             return;
         }
         const player = players[0];
         if (!player.id) {
-            message.edit(`Could not find **${this.paramMap.username}**'s stats on the \`${this.paramMap.region}\` region for the \`${this.paramMap.season}\` season. Double check the username, region, and ensure you've played this season.`);
+            message.edit(`Для **${this.paramMap.username}** не найдено статистики. Проверьте правильно ли введено имя.`);
             return;
         }
-
-        // Get Player Data
-        const seasonStatsApi = PubgPlatformService.getSeasonStatsApi(PlatformRegion[this.paramMap.region], this.paramMap.season);
-        const seasonData = await PubgPlayerService.getPlayerSeasonStatsById(seasonStatsApi, player.id, this.paramMap.season);
-        if (!seasonData) {
-            message.edit(`Could not find **${this.paramMap.username}**'s stats on the \`${this.paramMap.region}\` region for the \`${this.paramMap.season}\` season. Double check the username, region, and ensure you've played this season.`);
-            return;
-        }
-
-        const attatchment = await this.addDefaultImageStats(seasonData);
-        const imageReply = await message.channel.send(`**${originalPoster.username}**, use the **1**, **2**, and **4** **reactions** to switch between **Solo**, **Duo**, and **Squad**.`, attatchment);
+        
         this.setupReactions(imageReply, originalPoster, seasonData);
     };
 
     //TODO нужно ли мне это
     /**
      * Retrieves the paramters for the command
-     * @param {Discord.Message} msg
-     * @param {string[]} params
-     * @returns {Promise<ParameterMap>}
+     *
      */
     async getParameters(msg, params) {
         let paramMap;
@@ -112,18 +94,7 @@ export default class Statistic {
         paramMap = {
             username: pubg_params.username,
         };
-
-        /* AnalyticsService.track(this.help.name, {
-            distinct_id: msg.author.id,
-            discord_id: msg.author.id,
-            discord_username: msg.author.tag,
-            number_parameters: params.length,
-            pubg_name: paramMap.username,
-            season: paramMap.season,
-            region: paramMap.region,
-            mode: paramMap.mode
-        });
- */
+        
         return paramMap;
     }
 
@@ -141,9 +112,7 @@ export default class Statistic {
 
     /**
      * Adds reaction collectors and filters to make interactive messages
-     * @param {Discord.Message} msg
-     * @param {Discord.User} originalPoster
-     * @param {PlayerSeason} seasonData
+   
      */
     async setupReactions(msg, originalPoster, seasonData) {
         const onOneCollect = async () => {
