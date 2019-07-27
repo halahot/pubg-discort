@@ -1,8 +1,7 @@
-import { PubgAPIEndpoint } from './base';
+const PubgAPIEndpoint = require('./base.js');
 
-
-export class SeasonsPubgAPI extends PubgAPIEndpoint {
-  list() {
+module.exports = class SeasonsPubgAPI extends PubgAPIEndpoint.PubgAPIEndpoint {
+  list () {
     return this.api.axios.get(`/seasons`);
   }
-}
+};

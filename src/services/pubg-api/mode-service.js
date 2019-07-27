@@ -1,9 +1,7 @@
-import { GameMode } from '../../pubg-typescript-api';
+const GameMode = require('../../pubg-js-api/shared/constants.js');
 
-export default class PubgModeService {
-
-    static getAvailableModes() {
-        return Object.values(GameMode);
-    }
-
-}
+module.exports = class PubgModeService {
+  static getAvailableModes () {
+    return Object.values(GameMode);
+  }
+};

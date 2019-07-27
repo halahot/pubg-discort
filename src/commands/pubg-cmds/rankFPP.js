@@ -12,13 +12,11 @@ export default class Rank {
 
    getHelp() {
         return {
-            name: 'tpp or fpp',
-            description: `Возвращает статистику игрока. **Имя чувствительно к регистру**`,
-            usage: ['<prefix>tpp [pubg username]', '<prefix>fpp [pubg username]', 
-                '<prefix> tpp',
+            name: 'fpp',
+            description: `Возвращает fpp статистику игрока. **Имя чувствительно к регистру**`,
+            usage: ['<prefix>fpp [pubg username]', 
                 '<prefix> fpp'],
             examples: [
-                '!tpp',
                 '!fpp'
             ]
         };
@@ -66,18 +64,10 @@ export default class Rank {
             const serverDefaults = await SqlServerService.getServer(msg.guild.id);
             pubg_params = await ParameterService.getPubgParameters(params.join(' '), msg.author.id, true, serverDefaults);
 
-            if (!pubg_params.season) {
-                const seasonObj = await PubgSeasonService.getCurrentSeason(PubgPlatformService.getApi(PlatformRegion[pubg_params.region]));
-                pubg_params.season = PubgSeasonService.getSeasonDisplayName(seasonObj);
-            }
-        } else {
-            pubg_params = await ParameterService.getPubgParameters(params.join(' '), msg.author.id, true);
-        }
-
         // Throw error if no username supplied
         if (!pubg_params.username) {
-            DiscordMessageService.handleError(msg, 'Error:: Must specify a username or register with `register` command', this.help);
-            throw 'Error:: Must specify a username';
+            DiscordMessageService.handleError(msg, 'Error:: Must specify a username or register with `register` command', this.getHelp());
+            throw 'Укажите имя пользователя';
         }
 
         paramMap = {

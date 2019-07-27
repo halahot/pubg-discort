@@ -1,6 +1,4 @@
-import {PlayersPubgAPI, PubgAPI } from '..';
-
-
+const PlayersPubgAPI = require('../api/player.js');
 /**
  * A PUBG Player.
  *
@@ -8,13 +6,11 @@ import {PlayersPubgAPI, PubgAPI } from '..';
  *
  * To retrieve details on the Matches this player took part in, see `Match` class.
  */
-export default class Player {
-  
-  constructor(player) {
+module.exports = class Player {
+  constructor (player) {
     this._id = player.id;
     this._name = player.attributes.name;
     this._shardId = player.attributes.shardId;
-    // this._matchIds = player.relationships != null .matches.data.map(m => m.id);
   }
 
   /**
@@ -27,7 +23,7 @@ export default class Player {
    * @param api instance of `PubgAPI` that will be used to make the API request
    * @param playerId ID of the player to retrieve
    */
-  static async get(api, playerId) {
+  static async get (api, playerId) {
     const playersAPI = new PlayersPubgAPI(api);
     const playerData = await playersAPI.get(playerId);
     return Player.fromDetail(playerData.data);
@@ -43,7 +39,7 @@ export default class Player {
    * @param api instance of `PubgAPI` that will be used to make the API request
    * @param playerIds list of player IDs
    */
-  static async filterById(api, playerIds) {
+  static async filterById (api, playerIds) {
     const playersAPI = new PlayersPubgAPI(api);
     const playersData = await playersAPI.listByID(playerIds);
     return Player.fromList(playersData.data);
@@ -59,7 +55,7 @@ export default class Player {
    * @param api instance of `PubgAPI` that will be used to make the API request
    * @param playerNames list of player names
    */
-  static async filterByName(api, playerNames) {
+  static async filterByName (api, playerNames) {
     const playersAPI = new PlayersPubgAPI(api);
     const playersData = await playersAPI.listByName(playerNames);
     return Player.fromList(playersData.data);
@@ -69,7 +65,7 @@ export default class Player {
    * Create and return a Player instance from an API player detail reply.
    * @param playerDetail Player resource as returned from PUBG API
    */
-  static fromDetail(playerDetail) {
+  static fromDetail (playerDetail) {
     return new Player(playerDetail.data);
   }
 
@@ -77,7 +73,7 @@ export default class Player {
    * Create and return a list of Player instances from an API player list reply.
    * @param playerList PlayerList resource as returned from PUBG API
    */
-  static fromList(playerList) {
+  static fromList (playerList) {
     const players = [];
     playerList.data.forEach(playerData => {
       const player = new Player(playerData);
@@ -89,14 +85,14 @@ export default class Player {
   /**
    * Player ID.
    */
-  get id() {
+  get id () {
     return this._id;
   }
 
   /**
    * Player name.
    */
-  get name() {
+  get name () {
     return this._name;
   }
 
@@ -104,12 +100,11 @@ export default class Player {
    * List of match IDs this player took part in.
    * This list is ordered from most recent to oldest.
    */
-  get matchIds() {
+  get matchIds () {
     return this._matchIds;
   }
 
-  get shardId() {
+  get shardId () {
     return this._shardId;
   }
-
 }

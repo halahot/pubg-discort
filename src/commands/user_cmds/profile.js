@@ -18,8 +18,8 @@ export class Profile {
             description: `Показывает профиль Discord  пользователя`,
             usage: '<prefix>profile',
             examples: [
-                '!pubg-profile',
-                '!pubg-profile [@Discord_Mention]'
+                '!profile',
+                '!profile [@Discord_Mention]'
             ]
         };
     }

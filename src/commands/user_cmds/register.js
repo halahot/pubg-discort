@@ -1,12 +1,10 @@
 import * as Discord from 'discord.js';
-import {
-    DiscordMessageService,
-    PubgPlayerService,
-    SqlServerService,
-    SqlUserRegisteryService,
-    ParameterService,
-    PubgPlatformService,
-} from '../../services';
+import { DiscordMessageService } from '../../services/messages-services.js';
+import { PubgPlayerService } from '../../services/pubg-api/player-service.js';
+import { SqlServerService } from '../../services/sql-servises/sql-server-service.js';
+import { SqlUserRegisteryService } from '../../services/sql-servises/sql-user-registry-service.js';
+import { ParameterService } from '../../services/parametr-service.js';
+import { PubgPlatformService } from '../../services/pubg-api/platform-service.js';
 
 import { COLOR } from '../../shared/constants.js';
 
@@ -26,12 +24,12 @@ export class Register {
     getHelp() {
 
         return {
-            name: 'register',
+            name: 'reg',
             description: 'Регистрация пользователя Discord - **Имя чувствительно к регистру**',
-            usage: '<префикс>register <Имя пользователя>',
+            usage: '<префикс>reg <Имя пользователя>',
             examples: [
-                '!register john',
-                '!register "Player A"'
+                '!reg john',
+                '!reg "Player A"'
             ]
         };
     }
