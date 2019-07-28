@@ -1,53 +1,32 @@
-import * as Discord from 'discord.js';
-import { SqlServerRegisteryService } from '../../services';
-import { COLOR } from '../../shared/constants';
+const Discord = require('discord.js');
+const SqlServerRegisteryService = require('../../services/sql-servises/sql-serverRegistry-service.js');
+const constants = require('../../shared/constants.js');
+module.exports = class Users {
+  async run (msg) {
+    const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
+    const registeredPlayersStr = this.getPlayerString(registeredPlayers);
 
-export class Users {
+    const embed = new Discord.RichEmbed()
+      .setTitle(registeredPlayers.length + ' зарегистрированных пользователей')
+      .setColor(constants.COLOR)
+      .addField('Игроки', registeredPlayersStr, true)
+      .addBlankField(true);
 
-    /* conf: CommandConfiguration = {
-        group: 'Server',
-        enabled: true,
-        guildOnly: true,
-        aliases: [],
-        permLevel: 0
-    }; */
+    msg.channel.send({ embed });
+  }
 
-    /* help = {
-        name: 'users',
-        description: 'List all users on the server\'s registery.',
-        usage: '<prefix>users',
-        examples: [
-            '!users'
-        ]
-    }; */
+  getPlayerString (registeredPlayers) {
+    let players = '';
 
-    async run(msg) {
-
-        const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
-        const registeredPlayersStr = this.getPlayerString(registeredPlayers);
-
-        let embed = new Discord.RichEmbed()
-            .setTitle(registeredPlayers.length + ' зарегистрированных пользователей')
-            .setColor(COLOR)
-            .addField('Игроки', registeredPlayersStr, true)
-            .addBlankField(true);
-
-        msg.channel.send({ embed });
-    };
-
-    getPlayerString(registeredPlayers) {
-        let players = '';
-
-        for (let i = 0; i < registeredPlayers.length; i++) {
-            const player = registeredPlayers[i];
-            players += `${i + 1}.\t **${player.username}** [${player.platform}]\n`;
-        }
-
-        if (players === '') {
-            players = 'Нет зарегистрированных пользователей. Введите `<prefix>addUser <username>`';
-        }
-
-        return players;
+    for (let i = 0; i < registeredPlayers.length; i++) {
+      const player = registeredPlayers[i];
+      players += `${i + 1}.\t **${player.username}** [${player.platform}]\n`;
     }
 
-}
+    if (players === '') {
+      players = 'Нет зарегистрированных пользователей. Введите `<prefix>addUser <username>`';
+    }
+
+    return players;
+  }
+};

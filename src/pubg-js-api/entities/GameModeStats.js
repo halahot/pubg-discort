@@ -6,6 +6,8 @@ module.exports = class GameModeStats {
     this._losses = playerSeason.losses;
     this._maxKillStreaks = playerSeason.maxKillStreaks;
     this._roundsPlayed = playerSeason.roundsPlayed;
+    this._rank = playerSeason._rank;
+    this._rankPoint = playerSeason._rankPoint;
   }
 
   get damageDealt () {
