@@ -1,0 +1,7 @@
+{
+    "jshint.options": {"esversion": 6},
+    "eslint.enable": true,
+    "eslint.packageManager":"npm",
+    "eslint.run":"onSave",
+    "eslint.autoFixOnSave":false
+}

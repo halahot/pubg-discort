@@ -1,16 +1,33 @@
-const  COMMON_MESSAGES =  {
-    REACTION_WARNING: ':warning: Bot is missing the `Text Permissions > Manage Messages` permission. Give permission for the best experience. :warning:'
-}
+const COMMON_MESSAGES = Object.freeze({
+  REACTION_WARNING: ':warning: Bot is missing the `Text Permissions > Manage Messages` permission. Give permission for the best experience. :warning:'
+});
 
-const TIME_IN_SECONDS = {
-    ONE_MINUTE: 60, 
-    FIVE_MINUTES: ONE_MINUTE * 5,   
-    ONE_HOUR: ONE_MINUTE * 60,
-    THREE_HOUR: ONE_HOUR * 3
-}
+const TIME_IN_SECONDS = Object.freeze({
+  ONE_MINUTE: 60,
+  FIVE_MINUTES: 300,
+  ONE_HOUR: 18000
+});
 
-export default {
-    COMMON_MESSAGES,
-    TIME_IN_SECONDS
-}
+const COLOR = '0x00AE86';
 
+const ROLES =
+    [{
+      roleID: '579821131595382816',
+      kd: '1'
+    }, {
+      roleID: '579821189501812748',
+      kd: '1.5'
+    }, {
+      roleID: '579821228932464680',
+      kd: '2'
+    }, {
+      roleID: '579821253355896833',
+      kd: '2.5'
+    }];
+
+module.exports = {
+  COMMON_MESSAGES,
+  TIME_IN_SECONDS,
+  COLOR,
+  ROLES
+};
