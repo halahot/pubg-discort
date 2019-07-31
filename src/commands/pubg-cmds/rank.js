@@ -1,10 +1,9 @@
-import { PubgAPI, PlayerSeason, Player, GameModeStats, Season } from '../../pubg-js-api';
+// import { PubgAPI, PlayerSeason, Player, GameModeStats, Season } from '../../pubg-js-api';
 const constants = require('../../shared/constants.js');
 const Discord = require('discord.js');
 const fs = require('fs');
 const CommonService = require('../../services/common-service.js');
 const DiscordMessageService = require('../../services/messages-services.js');
-const ParameterService = require('../../services/parametr-service');
 const PubgPlatformService = require('../../services/pubg-api/platform-service.js');
 const PubgPlayerService = require('../../services/pubg-api/player-service.js');
 // const PubgRatingService = require('../../services/pubg-api/')
