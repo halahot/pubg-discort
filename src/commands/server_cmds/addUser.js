@@ -1,17 +1,21 @@
 const Discord = require('discord.js');
 const DiscordMessageService = require('../../services/messages-services.js');
-const ParameterService = require('../../services/parametr-service.js');
 const PubgPlayerService = require('../../services/pubg-api.js');
-const SqlServerService = require('../../services/sql-servises/sql-server-service.js');
 const SqlServerRegisteryService = require('../../services/sql-servises/sql-serverRegistry-service.js');
 const PubgPlatformService = require('../../services/pubg-api/');
 const constants = require('../../shared/constants.js');
 module.exports = class AddUser {
+  constructor () {
+    this.name = 'addUser',
+    this.alias = 'add',
+    this.usage = this.getHelp();
+  }
+
   getHelp () {
     return {
       name: 'addUser',
       description: 'Добавляет пользователя на сервер. **Name is case sensitive**',
-      usage: '<prefix>addUser <username>',
+      usage: '<prefix>add <username>',
       examples: [
         '!addUser john',
         '!addUser "Player A"'
@@ -19,8 +23,8 @@ module.exports = class AddUser {
     };
   }
 
-  async run (bot, msg, params, perms) {
-    const userName = params[0];
+  async run (client, msg, args) {
+    const userName = args[0];
     if (!userName) {
       DiscordMessageService.handleError(msg, 'Ошибка: Укажите имя пользователя', this.getHelp());
       return;

@@ -29,6 +29,7 @@
         "eslint-config-standard": "^13.0.1",
         "node-cache": "^4.2.0",
         "pg": "^7.11.0",
+        "sqlite3": "^4.0.9",
         "winston": "^3.2.1"
     },
     "devDependencies": {

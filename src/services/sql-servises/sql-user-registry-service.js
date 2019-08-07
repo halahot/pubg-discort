@@ -1,14 +1,10 @@
-const pool = require('../../../configs/sql-config.js');
+const db = require('../../../configs/sql-config.js');
 const CacheService = require('../cashe-service.js');
 const constants = require('../../shared/constants');
 
 const cache = new CacheService();
 
 module.exports = class SqlUserRegisteryService {
-  static getTableName () {
-    return 'user_registery';
-  }
-
   static getCacheKey (discordId) {
     return `sql.userRegistery.getRegisteredUser-${discordId}`;
   }
@@ -17,15 +13,14 @@ module.exports = class SqlUserRegisteryService {
     const cacheKey = this.getCacheKey(discordId);
     const ttl = constants.TIME_IN_SECONDS.ONE_MINUTE;
     const storeFunction = async () => {
-      const query = `select P.username, P.platform from ${this.getTableName} as UR left join players as P on P.id = UR.fk_players_id where discord_id = $1`;
-      const res = await pool.query(query, [discordId]);
-
-      if (res.rowCount !== 0) {
-        return res.rows[0];
-      }
-      return null;
+      const query = `select P.username, P.platform from user_registery as UR left join players as P on P.id = UR.fk_players_id where discord_id = $1`;
+      await db.run(query, [discordId], (_err, row) => {
+        if (row) {
+          return row;
+        }
+        return null;
+      });
     };
-
     return await cache.get(cacheKey, storeFunction, ttl);
   }
 
@@ -37,22 +32,22 @@ module.exports = class SqlUserRegisteryService {
     const cacheKey = this.getCacheKey(discordId);
     cache.del(cacheKey);
 
-    const query = `select * from ${this.getTableName} where discord_id = $1`;
-    const res = await pool.query(query, [discordId]);
-
-    if (res.rowCount === 0) {
-      await pool.query(`insert into ${this.getTableName}
+    const query = `select * from user_registery where discord_id = $1`;
+    db.run(query, [discordId], (err, row) => {
+    if (row === 0) {
+      await db.run(`insert into user_registery
                 (discord_id, fk_players_id)
                 values ($1, (select id from players where pubg_id=$2))`, [discordId, pubgId]
       );
       return true;
     } else {
-      await pool.query(`update ${this.getTableName}
+      await db.run(`update user_registery
                 set
                     fk_players_id=(select id from players where pubg_id=$2)
                 where discord_id = $1`, [discordId, pubgId]
       );
       return true;
+    });
     }
   }
 
@@ -64,6 +59,6 @@ module.exports = class SqlUserRegisteryService {
     const cacheKey = this.getCacheKey(discordId);
     cache.del(cacheKey);
 
-    return pool.query(`delete from ${this.tableName} where discord_id = $1`, [discordId]);
+    return db.run(`delete from user_registery where discord_id = $1`, [discordId]);
   }
-}
+};

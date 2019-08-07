@@ -9,6 +9,8 @@ const TIME_IN_SECONDS = Object.freeze({
 });
 
 const COLOR = '0x00AE86';
+const LOG_CHANNEL_ID;
+const USER_CHANNEL_ID;
 
 const ROLES =
     [{
@@ -29,5 +31,7 @@ module.exports = {
   COMMON_MESSAGES,
   TIME_IN_SECONDS,
   COLOR,
-  ROLES
+  ROLES,
+  LOG_CHANNEL_ID,
+  USER_CHANNEL_ID
 };

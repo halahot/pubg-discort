@@ -2,6 +2,12 @@ const Discord = require('discord.js');
 const SqlServerRegisteryService = require('../../services/sql-servises/sql-serverRegistry-service.js');
 const constants = require('../../shared/constants.js');
 module.exports = class Users {
+  constructor () {
+    this.name = 'getUsers',
+    this.alias = 'all',
+    this.usage = 'all';
+  }
+
   async run (msg) {
     const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
     const registeredPlayersStr = this.getPlayerString(registeredPlayers);

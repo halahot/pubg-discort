@@ -6,20 +6,15 @@ const SqlUserRegisteryService = require('../../services/sql-servises/sql-user-re
 const ParameterService = require('../../services/parametr-service.js');
 const PubgPlatformService = require('../../services/pubg-api/platform-service.js');
 const constants = require('../../shared/constants.js');
+const assignRole = require('../../services/role-service.js');
 module.exports = class Register {
-  getHelp () {
-    return {
-      name: 'reg',
-      description: 'Регистрация пользователя Discord - **Имя чувствительно к регистру**',
-      usage: '<префикс>reg <Имя пользователя>',
-      examples: [
-        '!reg john',
-        '!reg "Player A"'
-      ]
-    };
+  constructor () {
+    this.name = 'reg',
+    this.alias = 'reg',
+    this.usage = this.getHelp();
   }
 
-  async run (msg, params) {
+  run (msg, params) {
     let paramMap;
 
     try {

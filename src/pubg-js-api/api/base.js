@@ -17,20 +17,6 @@ class PubgAPI {
       headers: headers
     });
   }
-
-  /**
-   * The AxiosInstance used to make authenticated API requests.
-   */
-  get axios () {
-    return this._axios;
-  }
-
-  /**
-     * Platform and Region associated with this API instance.
-     */
-  get platformRegion () {
-    return this._platformRegion;
-  }
 }
 
 class PubgAPIEndpoint {

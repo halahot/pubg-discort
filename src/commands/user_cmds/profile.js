@@ -3,6 +3,11 @@ const SqlUserRegisteryService = require('../../services/sql-servises/sql-user-re
 const constants = require('../../shared/constants.js');
 
 module.exports = class Profile {
+  constructor () {
+    this.name = 'profile',
+    this.alias = 'profile',
+    this.usage = this.getHelp();
+  }
   getHelp () {
     return {
       name: 'profile',

@@ -4,7 +4,6 @@ const Player = require('../../pubg-js-api/api/player.js');
 const PlayerSeason = require('../../pubg-js-api/entities/PlayerSeason.js');
 const constants = require('../../shared/constants.js');
 const PubgSeasonService = require('./season-service.js');
-
 const cache = new CacheService();
 
 module.exports = class PubgPlayerService {
@@ -93,6 +92,16 @@ module.exports = class PubgPlayerService {
     const storeFunction = async () => {
       const seasonId = PubgSeasonService.getPubgSeasonId(season);
       return PlayerSeason.get(api, id, seasonId).catch(() => null);
+    };
+
+    return await cache.get(cacheKey, storeFunction, ttl);
+  }
+
+  static async getPlayers() {
+    const cacheKey = `pubgApi.getPlayers-steam`;
+    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
+    const storeFunction = async () => {
+      return SqlPlayersService.getPlayers();
     };
 
     return await cache.get(cacheKey, storeFunction, ttl);

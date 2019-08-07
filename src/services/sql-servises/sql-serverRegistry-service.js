@@ -1,4 +1,4 @@
-const pool = require('../../../configs/sql-config.js');
+const db = require('../../../configs/sql-config.js');
 module.exports = class SqlServerRegisteryService {
   /**
      * Adds a user from a server's registery
@@ -7,24 +7,24 @@ module.exports = class SqlServerRegisteryService {
      * @returns {Promise<boolean>} if add was successful
      */
   static async registerUserToServer (pubgId, serverId) {
-    let res = await pool.query(`select fk_servers_id
+    let res = db.run(`select fk_servers_id
             from server_registery
             where fk_players_id=(select id from players where pubg_id=$1) and
-            fk_servers_id=(select id from servers where server_id=$2)`, [pubgId, serverId]);
+            fk_servers_id=(select id from servers where server_id=$2)`, [pubgId, serverId], (err, row) => {
 
-    if (res.rowCount === 0) {
-      res = await pool.query(`insert into server_registery
+    if (row === 0) {
+      res = await db.run(`insert into server_registery
                 (fk_players_id, fk_servers_id)
                 values (
                     (select id from players where pubg_id=$1), (select id from servers where server_id=$2)
                 )`, [pubgId, serverId]);
       return true;
-    } else if (res.rowCount === 1) {
+    } else if (row === 1) {
       return true;
     }
     return false;
+  });
   }
-
   /**
      * Removes a user from a server's registery
      * @param {string} pubgId
@@ -32,14 +32,15 @@ module.exports = class SqlServerRegisteryService {
      * @returns {Promise<boolean>} boolean if delete was successful
      */
   static async unRegisterUserToServer (pubgId, serverId) {
-    const res = await pool.query(`delete from server_registery
+    await db.run(`delete from server_registery
             where fk_players_id=(select id from players where pubg_id=$1) and
-            fk_servers_id=(select id from servers where server_id=$2)`, [pubgId, serverId]);
+            fk_servers_id=(select id from servers where server_id=$2)`, [pubgId, serverId], (err, row) => {
 
-    if (res.rowCount === 1) {
-      return true;
-    }
-    return false;
+      if (row) {
+        return true;
+      }
+      return false;
+    });
   }
 
   /**
@@ -48,14 +49,15 @@ module.exports = class SqlServerRegisteryService {
      * @returns {Promise<Player[]>} list of players on the server
      */
   static async getRegisteredPlayersForServer (serverId) {
-    const res = await pool.query(`select P.pubg_id, P.username, P.platform
+    const res = await db.run(`select P.pubg_id, P.username, P.platform
             from server_registery as R
             left join players as P on R.fk_players_id = P.id
-            where fk_servers_id = (select id from servers where server_id=$1)`, [serverId]);
+            where fk_servers_id = (select id from servers where server_id=$1)`, [serverId], (err, row) => {
 
-    if (res.rowCount !== 0) {
-      return res.rows;
+    if (row == 0) {
+      return row;
     }
     return [];
-  }
+  });
+ }
 };
