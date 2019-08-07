@@ -8,7 +8,7 @@ module.exports = class Users {
     this.usage = 'all';
   }
 
-  async run (msg) {
+  async run (client, msg, args) {
     const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
     const registeredPlayersStr = this.getPlayerString(registeredPlayers);
 

@@ -33,22 +33,22 @@ module.exports = class SqlUserRegisteryService {
     cache.del(cacheKey);
 
     const query = `select * from user_registery where discord_id = $1`;
-    db.run(query, [discordId], (err, row) => {
-    if (row === 0) {
-      await db.run(`insert into user_registery
+    db.run(query, [discordId], (_err, row) => {
+      if (row === 0) {
+        db.run(`insert into user_registery
                 (discord_id, fk_players_id)
                 values ($1, (select id from players where pubg_id=$2))`, [discordId, pubgId]
-      );
-      return true;
-    } else {
-      await db.run(`update user_registery
+        );
+        return true;
+      } else {
+        db.run(`update user_registery
                 set
                     fk_players_id=(select id from players where pubg_id=$2)
                 where discord_id = $1`, [discordId, pubgId]
-      );
-      return true;
+        );
+        return true;
+      }
     });
-    }
   }
 
   /**

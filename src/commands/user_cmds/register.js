@@ -1,9 +1,7 @@
 const Discord = require('discord.js');
-const DiscordMessageService = require('../../services/messages-services.js');
 const PubgPlayerService = require('../../services/pubg-api/player-service.js');
-const SqlServerService = require('../../services/sql-servises/sql-server-service.js');
+// const SqlServerService = require('../../services/sql-servises/sql-server-service.js');
 const SqlUserRegisteryService = require('../../services/sql-servises/sql-user-registry-service.js');
-const ParameterService = require('../../services/parametr-service.js');
 const PubgPlatformService = require('../../services/pubg-api/platform-service.js');
 const constants = require('../../shared/constants.js');
 const assignRole = require('../../services/role-service.js');
@@ -11,36 +9,29 @@ module.exports = class Register {
   constructor () {
     this.name = 'reg',
     this.alias = 'reg',
-    this.usage = this.getHelp();
+    this.usage = 'reg';
   }
 
-  run (msg, params) {
-    let paramMap;
+  run (client, msg, args) {
+    let username;
 
     try {
-      paramMap = await this.getParameters(msg, params);
+      username = args[0].slice(1);
     } catch (e) {
       return;
     }
 
-    this.registerUser(msg, paramMap.username);
+    this.registerUser(msg, username);
   }
 
-  async getParameters (msg, params) {
-    let paramMap;
+  // async getParameters (client, msg, params) {
+  /*  let paramMap;
 
     let pubg_params;
-    if (msg.guild) {
-      const serverDefaults = await SqlServerService.getServer(msg.guild.id);
-      pubg_params = await ParameterService.getPubgParameters(params.join(' '), msg.author.id, true, serverDefaults);
-    } else {
-      pubg_params = await ParameterService.getPubgParameters(params.join(' '), msg.author.id, true);
-    }
 
     // Throw error if no username supplied
     if (!pubg_params.username) {
-      DiscordMessageService.handleError(msg, 'Нужно указать имя', this.getHelp);
-      throw 'Ошибка: Нужно указать имя';
+      msg.send(msg, 'Нужно указать имя');
     }
 
     paramMap = {
@@ -49,7 +40,7 @@ module.exports = class Register {
     };
 
     return paramMap;
-  }
+  } */
 
   async registerUser (msg, username) {
     const api = PubgPlatformService.getApi();

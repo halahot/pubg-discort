@@ -9,8 +9,8 @@ const TIME_IN_SECONDS = Object.freeze({
 });
 
 const COLOR = '0x00AE86';
-const LOG_CHANNEL_ID;
-const USER_CHANNEL_ID;
+const LOG_CHANNEL_ID = 579821131595382816;
+const USER_CHANNEL_ID = 579821131595382816;
 
 const ROLES =
     [{

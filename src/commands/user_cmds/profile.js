@@ -6,22 +6,11 @@ module.exports = class Profile {
   constructor () {
     this.name = 'profile',
     this.alias = 'profile',
-    this.usage = this.getHelp();
-  }
-  getHelp () {
-    return {
-      name: 'profile',
-      description: `Показывает профиль Discord  пользователя`,
-      usage: '<prefix>profile',
-      examples: [
-        '!profile',
-        '!profile [@Discord_Mention]'
-      ]
-    };
+    this.usage = 'profile';
   }
 
   // todo: what is mention
-  async run (bot, msg, params, perms) {
+  async run (client, msg, params) {
     let discordId;
     let usedMention = false;
 
@@ -35,7 +24,7 @@ module.exports = class Profile {
         return;
       }
       try {
-        user = await bot.fetchUser(discordId);
+        user = await client.fetchUser(discordId);
       } catch (e) {
         msg.channel.send(`You must use a Discord Mention as a parameter.`);
         return;
