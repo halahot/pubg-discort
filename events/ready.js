@@ -6,12 +6,15 @@ const PubgPlatformService = require('../src/services/pubg-api/platform-service.j
 const assignRole = require('../src/services/role-service.js');
 
 const fs = require('fs');
+const path = require('path');
 const { ROLES } = require('../src/shared/constants.js');
 console.log(PlayerService);
 
-var kds;
-var Guild;
-var currentSeason;
+let kds;
+let Guild;
+let currentSeason;
+const PATH_SEASON = path.join(__dirname, '../src/temp/PUBGSeason')
+const api = PubgPlatformService.getApi();
 
 module.exports = client => {
   try {
@@ -30,14 +33,14 @@ module.exports = client => {
 };
 
 async function updateSeason () {
-  currentSeason = seasonService.getCurrentSeason();
-  fs.writeFileSync('/temp/PUBGSeason', currentSeason);
+  currentSeason = seasonService.getCurrentSeason(api);
+  fs.writeFileSync(PATH_SEASON, currentSeason);
   console.log(currentSeason);
 }
 
 async function pubgUpdate () {
   const players = PlayerService.getPlayers();
-  const api = PubgPlatformService.getApi();
+  
   await asyncForEach(players, async (player) => {
     const seasonData = await PubgPlayerService.getPlayerSeasonStatsById(api, player.pubg_id, currentSeason);
     kds = CommonService.round((seasonData._squadFPPStat.kills / seasonData._squadFPPStat.losses) * 10) / 10;

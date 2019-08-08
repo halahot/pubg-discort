@@ -5,6 +5,6 @@ const apiKey = CommonService.getEnvironmentVariable('pubg_api_key');
 
 module.exports = class PubgPlatformService {
   static getApi () {
-    return new PubgAPI(apiKey);
+    return new PubgAPI.PubgAPI(apiKey);
   } 
 };

@@ -1,13 +1,14 @@
 const CommonService = require('../src/services/common-service.js');
+const path = require('path')
+const dbPath = path.resolve(__dirname, '../bot.db')
 const sqlite3 = require('sqlite3').verbose();
 // import * as logger from './logger.config';
 
-const connectionString = CommonService.getEnvironmentVariable('DATABASE_URL');
-const db = new sqlite3.Database(connectionString, sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     console.error(err.message);
   }
-  console.log('Connected to the chinook database.');
+  console.log('Connected to the bot database.');
 });
 
 db.run('CREATE TABLE IF NOT EXISTS players(id SERIAL PRIMARY KEY, pubg_id TEXT UNIQUE, username TEXT, platform TEXT);');

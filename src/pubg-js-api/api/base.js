@@ -23,10 +23,6 @@ class PubgAPIEndpoint {
   constructor (api) {
     this._api = api;
   }
-
-  get api () {
-    return this._api;
-  }
 }
 
 module.exports = {

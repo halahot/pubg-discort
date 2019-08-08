@@ -4,7 +4,8 @@
     "description": "pubg-discord bot made with js",
     "main": "index.js",
     "scripts": {
-        "test": "test"
+        "start": "node index.js",
+        "dev": "nodemon index.js"
     },
     "repository": {
         "type": "git",
@@ -33,6 +34,7 @@
         "winston": "^3.2.1"
     },
     "devDependencies": {
-        "eslint-plugin-import": "^2.18.2"
+        "eslint-plugin-import": "^2.18.2",
+        "nodemon": "^1.19.1"
     }
 }

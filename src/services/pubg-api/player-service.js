@@ -32,7 +32,7 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayersById (api, ids) {
     const cacheKey = `pubgApi.getPlayersById-${api.platformRegion}-${ids}`;
-    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
     const storeFunction = async () => {
       return Player.filterById(api, ids).catch(() => []);
     };
@@ -48,7 +48,7 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayersByName (api, names) {
     const cacheKey = `pubgApi.getPlayersByName-${api.platformRegion}-${names}`;
-    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
     const storeFunction = async () => {
       return Player.filterByName(api, names).catch(() => []);
     };
@@ -64,7 +64,7 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayerIdByName (api, name) {
     const cacheKey = `pubgApi.getPlayerIdByName-${name}-${api.platformRegion}`;
-    const ttl = constants.TIME_IN_SECOND.ONE_MINUTE;
+    const ttl = constants.TIME_IN_SECONDS.ONE_MINUTE;
     const storeFunction = async () => {
       const result = await this.getPlayersByName(api, [name]);
 
@@ -88,7 +88,7 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayerSeasonStatsById (api, id, season) {
     const cacheKey = `pubgApi.getPlayerSeasonStatsById-${id}-${season}-${api.platformRegion}`;
-    const ttl = constants.TIME_IN_SECOND.FIFTHTEEN_MINUTES;
+    const ttl = constants.TIME_IN_SECONDS.FIFTHTEEN_MINUTES;
     const storeFunction = async () => {
       const seasonId = PubgSeasonService.getPubgSeasonId(season);
       return PlayerSeason.get(api, id, seasonId).catch(() => null);
@@ -99,7 +99,7 @@ module.exports = class PubgPlayerService {
 
   static async getPlayers() {
     const cacheKey = `pubgApi.getPlayers-steam`;
-    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
     const storeFunction = async () => {
       return SqlPlayersService.getPlayers();
     };
