@@ -4,7 +4,7 @@ const constants = require('../../shared/constants.js');
 module.exports = class Users {
   constructor () {
     this.name = 'getUsers',
-    this.alias = 'all',
+    this.alias = ['all'],
     this.usage = 'all';
   }
 

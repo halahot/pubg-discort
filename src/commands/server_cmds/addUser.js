@@ -6,26 +6,14 @@ const constants = require('../../shared/constants.js');
 module.exports = class AddUser {
   constructor () {
     this.name = 'addUser',
-    this.alias = 'add',
+    this.alias = ['add'],
     this.usage = 'add';
   }
 
-  getHelp () {
-    return {
-      name: 'addUser',
-      description: 'Добавляет пользователя на сервер. **Name is case sensitive**',
-      usage: '<prefix>add <username>',
-      examples: [
-        '!addUser john',
-        '!addUser "Player A"'
-      ]
-    };
-  }
-
   run (client, msg, args) {
-    const userName = args[0];
+    const userName = args[2];
     if (!userName) {
-      msg.send(msg, 'Ошибка: Укажите имя пользователя', this.getHelp());
+      msg.reply('Ошибка: Укажите имя пользователя');
       return;
     }
 

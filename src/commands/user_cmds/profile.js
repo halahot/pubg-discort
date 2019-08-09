@@ -5,7 +5,7 @@ const constants = require('../../shared/constants.js');
 module.exports = class Profile {
   constructor () {
     this.name = 'profile',
-    this.alias = 'profile',
+    this.alias = ['profile'],
     this.usage = 'profile';
   }
 

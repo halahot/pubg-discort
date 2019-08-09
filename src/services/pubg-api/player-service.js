@@ -13,7 +13,7 @@ module.exports = class PubgPlayerService {
      * @param {string} name
      * @returns {Promise<string>} a promise that resolves to a pubg id
      */
-  static async getPlayerId (api, name) {
+  async getPlayerId (api, name) {
     const platform = api.platform;
     const player = await SqlPlayersService.getPlayer(name, platform);
 
@@ -30,10 +30,10 @@ module.exports = class PubgPlayerService {
      * @param {string[]} ids
      * @returns {Promise<string>} a promise that resolves to a pubg id
      */
-  static async getPlayersById (api, ids) {
+  async getPlayersById (api, ids) {
     const cacheKey = `pubgApi.getPlayersById-${api.platformRegion}-${ids}`;
     const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
-    const storeFunction = async () => {
+    const storeFunction = () => {
       return Player.filterById(api, ids).catch(() => []);
     };
 
@@ -49,8 +49,10 @@ module.exports = class PubgPlayerService {
   static async getPlayersByName (api, names) {
     const cacheKey = `pubgApi.getPlayersByName-${api.platformRegion}-${names}`;
     const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
-    const storeFunction = async () => {
-      return Player.filterByName(api, names).catch(() => []);
+    const storeFunction = () => {
+      return Player.filterByName(api, names)
+      .resolve(() => players)
+      .catch(() => []);
     };
 
     return await cache.get(cacheKey, storeFunction, ttl);

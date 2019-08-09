@@ -1,7 +1,7 @@
 module.exports = class Kick {
   constructor () {
     this.name = 'kick',
-    this.alias = 'kick',
+    this.alias = ['kick'],
     this.usage = 'kick';
   }
 

@@ -24,7 +24,7 @@ module.exports = class Rank {
   async run (client, message, args) {
     let userName = message.author.username;
 
-    const logChannel = message.channels.find(x => x.id === LOG_CHANNEL_ID);
+    const logChannel = client.channels.get(LOG_CHANNEL_ID);
     // const userChannel = msg.channels.find(x => x.id === USER_CHANNEL_ID);
     user = client.users.find(x => x.id === message.author.id);
     mode = args.slice(0, 1)[0];

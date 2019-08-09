@@ -48,7 +48,7 @@ module.exports = class SqlServerRegisteryService {
      * @returns {Promise<Player[]>} list of players on the server
      */
   static async getRegisteredPlayersForServer (serverId) {
-    const res = await db.run(`select P.pubg_id, P.username, P.platform
+    await db.run(`select P.pubg_id, P.username, P.platform
             from server_registery as R
             left join players as P on R.fk_players_id = P.id
             where fk_servers_id = (select id from servers where server_id=$1)`, [serverId], (err, row) => {

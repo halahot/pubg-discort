@@ -8,7 +8,7 @@ const assignRole = require('../../services/role-service.js');
 module.exports = class Register {
   constructor () {
     this.name = 'reg',
-    this.alias = 'reg',
+    this.alias = ['reg'],
     this.usage = 'reg';
   }
 
