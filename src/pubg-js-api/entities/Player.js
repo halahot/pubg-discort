@@ -81,30 +81,4 @@ module.exports = class Player {
     });
     return players;
   }
-
-  /**
-   * Player ID.
-   */
-  get id () {
-    return this._id;
-  }
-
-  /**
-   * Player name.
-   */
-  get name () {
-    return this._name;
-  }
-
-  /**
-   * List of match IDs this player took part in.
-   * This list is ordered from most recent to oldest.
-   */
-  get matchIds () {
-    return this._matchIds;
-  }
-
-  get shardId () {
-    return this._shardId;
-  }
 }

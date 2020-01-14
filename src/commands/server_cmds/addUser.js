@@ -1,95 +1,65 @@
-import * as Discord from 'discord.js';
-import { DiscordMessageService } from '../../services/messages-services.js';
-import { ParameterService } from '../../services/parametr-service.js';
-import { PubgPlayerService } from '../../services/pubg-api.js';
-import { SqlServerService } from '../../services/sql-servises/sql-server-service.js';
-import { SqlServerRegisteryService } from '../../services/sql-servises/sql-serverRegistry-service.js';
-import { PubgPlatformService } from '../../services/pubg-api/';
-import { COLOR } from '../../shared/constants.js';
+const Discord = require('discord.js');
+const PubgPlayerService = require('../../services/pubg-api/player-service.js');
+const SqlServerRegisteryService = require('../../services/sql-servises/sql-serverRegistry-service.js');
+const PubgPlatformService = require('../../services/pubg-api/platform-service.js');
+const constants = require('../../shared/constants.js');
+module.exports = class AddUser {
+  constructor () {
+    this.name = 'addUser',
+    this.alias = ['add'],
+    this.usage = 'add';
+  }
 
-export class AddUser {
-
-    /* conf: CommandConfiguration = {
-        group: 'Server',
-        enabled: true,
-        guildOnly: true,
-        aliases: [],
-        permLevel: 0
-    }; */
-
-    getHelp() {
-        return {
-            name: 'addUser',
-            description: 'Добавляет пользователя на сервер. **Name is case sensitive**',
-            usage: '<prefix>addUser <username>',
-            examples: [
-                '!addUser john',
-                '!addUser "Player A"',
-            ]
-        };
+  run (client, msg, args) {
+    const userName = args[2];
+    if (!userName) {
+      msg.reply('Ошибка: Укажите имя пользователя');
+      return;
     }
 
-    async run(bot, msg, params, perms) {
-        if (!params[0]) {
-            DiscordMessageService.handleError(msg, 'Ошибка: Укажите имя пользователя', this.getHelp());
-            return;
-        }
+    // const serverDefaults = await SqlServerService.getServer(msg.guild.id);
+    const api = PubgPlatformService.getApi();
+    addUser(msg, api, userName);
 
-        const serverDefaults = await SqlServerService.getServer(msg.guild.id);
-        const pubg_params = await ParameterService.getPubgParameters(params.join(' '), msg.author.id, true, serverDefaults);
-        const api = PubgPlatformService.getApi();
 
-       /*  AnalyticsService.track(this.help.name, {
-            distinct_id: msg.author.id,
-            server_id: msg.guild.id,
-            discord_id: msg.author.id,
-            discord_username: msg.author.tag,
-            number_parameters: params.length,
-            pubg_name: pubg_params.username,
-            region: pubg_params.region
-        }); */
+    async function addUser (msg, api, username) {
+      const message = await msg.channel.send(`Проверка **${username}** PUBG Id ... подождите несколько секунд`);
+      const pubgId = await PubgPlayerService.getPlayerId(api, username);
 
-        this.addUser(msg, api, pubg_params.region, pubg_params.username);
+      if (!pubgId) {
+        message.edit(`Пользователь **${username}** не найден. Проверьте имя пользователя.`);
+        return;
+      }
+
+      const registered = await SqlServerRegisteryService.registerUserToServer(pubgId, message.guild.id);
+      if (registered) {
+        const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
+        const registeredPlayersStr = getPlayerString(registeredPlayers);
+
+        const embed = new Discord.RichEmbed()
+          .setTitle(registeredPlayers.length + ' зарегистрированных игроков')
+          .setColor(constants.COLOR)
+          .addField('Игроки', registeredPlayersStr, true)
+          .addBlankField(true);
+        message.edit(`Добавлен **${username}**`, { embed });
+      } else {
+        message.edit(`Нельзя добавить **${username}**`);
+      }
     }
 
-    async addUser(msg, api, region, username) {
-        const message = await msg.channel.send(`Checking for **${username}**'s PUBG Id ... give me a second`);
-        const pubgId = await PubgPlayerService.getPlayerId(api, username);
+    function getPlayerString (registeredPlayers) {
+      let players = '';
 
-        if (!pubgId) {
-            message.edit(`Could not find **${username}** on the **${region}** region. Double check the username and region.`);
-            return;
-        }
+      for (let i = 0; i < registeredPlayers.length; i++) {
+        const player = registeredPlayers[i];
+        players += `${i + 1}.\t **${player.username}** [${player.platform}]\n`;
+      }
 
-        const registered = await SqlServerRegisteryService.registerUserToServer(pubgId, message.guild.id);
-        if (registered) {
-            const registeredPlayers = await SqlServerRegisteryService.getRegisteredPlayersForServer(msg.guild.id);
-            const registeredPlayersStr = this.getPlayerString(registeredPlayers);
+      if (players === '') {
+        players = 'Нет зарегистрированных пользователей. Используйте `<prefix>addUser <username>`';
+      }
 
-            const embed = new Discord.RichEmbed()
-                .setTitle(registeredPlayers.length + ' Registered Users')
-                .setColor(COLOR)
-                .addField('Players', registeredPlayersStr, true)
-                .addBlankField(true);
-            message.edit(`Добавлен **${username}**`, { embed });
-        } else {
-            message.edit(`Нельзя добавить **${username}**`);
-        }
+      return players;
     }
-
-    getPlayerString(registeredPlayers) {
-        let players = '';
-
-        for (let i = 0; i < registeredPlayers.length; i++) {
-            const player = registeredPlayers[i];
-            players += `${i + 1}.\t **${player.username}** [${player.platform}]\n`;
-        }
-
-        if (players === '') {
-            players = 'Нет зарегистрированных пользователей. Используйте `<prefix>addUser <username>`';
-        }
-
-        return players;
-    }
-
-}
+  }
+};

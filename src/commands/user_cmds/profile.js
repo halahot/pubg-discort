@@ -1,81 +1,59 @@
-import * as Discord from 'discord.js';
-import { SqlUserRegisteryService } from '../../services';
-import { COLOR } from '../../shared/constants.js';
+const Discord = require('discord.js');
+const SqlUserRegisteryService = require('../../services/sql-servises/sql-user-registry-service.js');
+const constants = require('../../shared/constants.js');
 
-export class Profile {
+module.exports = class Profile {
+  constructor () {
+    this.name = 'profile',
+    this.alias = ['profile'],
+    this.usage = 'profile';
+  }
 
-    /* conf: CommandConfiguration = {
-        group: 'User',
-        enabled: true,
-        guildOnly: false,
-        aliases: [],
-        permLevel: 0
-    }; */
+  // todo: what is mention
+  async run (client, msg, params) {
+    let discordId;
+    let usedMention = false;
 
-    getHelp() {
-        return {
-            name: 'profile',
-            description: `Показывает профиль Discord  пользователя`,
-            usage: '<prefix>profile',
-            examples: [
-                '!profile',
-                '!profile [@Discord_Mention]'
-            ]
-        };
+    let user;
+    if (params.length > 0) {
+      const mention = params[0];
+      discordId = mention.substring(2, mention.length - 1);
+      usedMention = true;
+      if (usedMention && !msg.guild) {
+        msg.channel.send(`Mentions are not supported in direct messages.`);
+        return;
+      }
+      try {
+        user = await client.fetchUser(discordId);
+      } catch (e) {
+        msg.channel.send(`You must use a Discord Mention as a parameter.`);
+        return;
+      }
+    } else {
+      discordId = msg.author.id;
+      user = msg.author;
     }
 
-    async run(bot, msg, params, perms) {
-        let discordId;
-        let usedMention = false;
+    const player = await SqlUserRegisteryService.getRegisteredUser(discordId);
 
-        let user;
-        if (params.length > 0) {
-            const mention = params[0];
-            discordId = mention.substring(2, mention.length - 1);
-            usedMention = true;
-            if (usedMention && !msg.guild) {
-                msg.channel.send(`Mentions are not supported in direct messages.`);
-                return;
-            }
-            try {
-                user = await bot.fetchUser(discordId);
-            } catch (e) {
-                msg.channel.send(`You must use a Discord Mention as a parameter.`);
-                return;
-            }
-        } else {
-            discordId = msg.author.id;
-            user = msg.author;
-        }
-
-        const player = await SqlUserRegisteryService.getRegisteredUser(discordId);
-
-        if (!player && !player.username && !usedMention) {
-            msg.channel.send(`You haven't registered yet -- run \`register\`.`);
-            return;
-        } else if (!player && !player.username && usedMention) {
-            msg.channel.send(`Пользователь не зарегистрирован -- ask them run \`register\`.`);
-            return;
-        }
-
-        /* AnalyticsService.track(this.help.name, {
-            distinct_id: msg.author.id,
-            discord_id: msg.author.id,
-            discord_username: msg.author.tag,
-            pubg_name: player.username
-        }); */
-
-        const date = user.createdAt;
-        let embed = new Discord.RichEmbed()
-            .setTitle(`Профиль **${user.tag}**`)
-            .setThumbnail(user.displayAvatarURL)
-            .setColor(COLOR)
-            .addField('Зарегистрирован Discord', `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`)
-            .addField('PUBG Username', player.username, true)
-            .addField('Platform', player.platform, true)
-            .setTimestamp();
-
-        msg.channel.send({ embed });
+    if (!player && !player.username && !usedMention) {
+      msg.channel.send(`Вы пока не зарегистрированы -- введите команду \`reg\`.`);
+      return;
+    } else if (!player && !player.username && usedMention) {
+      msg.channel.send(`Пользователь не зарегистрирован -- введите команду  \`reg\`.`);
+      return;
     }
 
-}
+    const date = user.createdAt;
+    const embed = new Discord.RichEmbed()
+      .setTitle(`Профиль **${user.tag}**`)
+      .setThumbnail(user.displayAvatarURL)
+      .setColor(constants.COLOR)
+      .addField('Зарегистрирован Discord', `${date.getMonth()}/${date.getDate()}/${date.getFullYear()}`)
+      .addField('PUBG Username', player.username, true)
+      .addField('Platform', player.platform, true)
+      .setTimestamp();
+
+    msg.channel.send({ embed });
+  }
+};

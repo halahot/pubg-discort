@@ -1,4 +1,4 @@
-const Season = require('../../pubg-js-api/api/seasons.js');
+const Season = require('../../pubg-js-api/entities/Season.js');
 const constants = require('../../shared/constants.js');
 const CacheService = require('../cashe-service.js');
 

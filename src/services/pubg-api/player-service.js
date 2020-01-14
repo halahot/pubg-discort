@@ -4,7 +4,6 @@ const Player = require('../../pubg-js-api/api/player.js');
 const PlayerSeason = require('../../pubg-js-api/entities/PlayerSeason.js');
 const constants = require('../../shared/constants.js');
 const PubgSeasonService = require('./season-service.js');
-
 const cache = new CacheService();
 
 module.exports = class PubgPlayerService {
@@ -14,7 +13,7 @@ module.exports = class PubgPlayerService {
      * @param {string} name
      * @returns {Promise<string>} a promise that resolves to a pubg id
      */
-  static async getPlayerId (api, name) {
+  async getPlayerId (api, name) {
     const platform = api.platform;
     const player = await SqlPlayersService.getPlayer(name, platform);
 
@@ -31,10 +30,10 @@ module.exports = class PubgPlayerService {
      * @param {string[]} ids
      * @returns {Promise<string>} a promise that resolves to a pubg id
      */
-  static async getPlayersById (api, ids) {
+  async getPlayersById (api, ids) {
     const cacheKey = `pubgApi.getPlayersById-${api.platformRegion}-${ids}`;
-    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
-    const storeFunction = async () => {
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
+    const storeFunction = () => {
       return Player.filterById(api, ids).catch(() => []);
     };
 
@@ -49,9 +48,11 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayersByName (api, names) {
     const cacheKey = `pubgApi.getPlayersByName-${api.platformRegion}-${names}`;
-    const ttl = constants.TIME_IN_SECOND.FIVE_MINUTES;
-    const storeFunction = async () => {
-      return Player.filterByName(api, names).catch(() => []);
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
+    const storeFunction = () => {
+      return Player.filterByName(api, names)
+      .resolve(() => players)
+      .catch(() => []);
     };
 
     return await cache.get(cacheKey, storeFunction, ttl);
@@ -65,7 +66,7 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayerIdByName (api, name) {
     const cacheKey = `pubgApi.getPlayerIdByName-${name}-${api.platformRegion}`;
-    const ttl = constants.TIME_IN_SECOND.ONE_MINUTE;
+    const ttl = constants.TIME_IN_SECONDS.ONE_MINUTE;
     const storeFunction = async () => {
       const result = await this.getPlayersByName(api, [name]);
 
@@ -89,10 +90,20 @@ module.exports = class PubgPlayerService {
      */
   static async getPlayerSeasonStatsById (api, id, season) {
     const cacheKey = `pubgApi.getPlayerSeasonStatsById-${id}-${season}-${api.platformRegion}`;
-    const ttl = constants.TIME_IN_SECOND.FIFTHTEEN_MINUTES;
+    const ttl = constants.TIME_IN_SECONDS.FIFTHTEEN_MINUTES;
     const storeFunction = async () => {
       const seasonId = PubgSeasonService.getPubgSeasonId(season);
       return PlayerSeason.get(api, id, seasonId).catch(() => null);
+    };
+
+    return await cache.get(cacheKey, storeFunction, ttl);
+  }
+
+  static async getPlayers() {
+    const cacheKey = `pubgApi.getPlayers-steam`;
+    const ttl = constants.TIME_IN_SECONDS.FIVE_MINUTES;
+    const storeFunction = async () => {
+      return SqlPlayersService.getPlayers();
     };
 
     return await cache.get(cacheKey, storeFunction, ttl);
