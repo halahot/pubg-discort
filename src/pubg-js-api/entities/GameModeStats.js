@@ -19,7 +19,7 @@ module.exports = class GameModeStats {
   get longestKill () {
     return this._longestKill;
   }
-
+  
   get losses () {
     return this._losses;
   }
